@@ -2,13 +2,11 @@
 
 namespace SmartStock.Models
 {
-    public class ProductCategory
+    public class Cart
     {
         [Key]
         public int Id { get; set; }
 
-        public required string Title { get; set; }
-
-        public string? Description { get; set; }
+        public required ICollection<ProductInCart> Products { get; set; } = new List<ProductInCart>();
     }
 }

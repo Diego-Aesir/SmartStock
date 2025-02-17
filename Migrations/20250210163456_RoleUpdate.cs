@@ -5,7 +5,7 @@
 namespace SmartStock.Migrations
 {
     /// <inheritdoc />
-    public partial class ClientRoleAdd : Migration
+    public partial class RoleUpdate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

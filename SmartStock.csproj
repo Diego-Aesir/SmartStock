@@ -10,6 +10,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\NovaPasta1\**" />
+    <Compile Remove="Views\Shared\Components\UpdateStock\**" />
+    <Content Remove="Views\NovaPasta1\**" />
+    <Content Remove="Views\Shared\Components\UpdateStock\**" />
+    <EmbeddedResource Remove="Views\NovaPasta1\**" />
+    <EmbeddedResource Remove="Views\Shared\Components\UpdateStock\**" />
+    <None Remove="Views\NovaPasta1\**" />
+    <None Remove="Views\Shared\Components\UpdateStock\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ViewComponents\UpdateStock.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Product\View.cshtml" />
+    <Content Remove="Views\Shared\ProductComponent.cshtml" />
     <Content Remove="Views\User\Login.razor" />
   </ItemGroup>
 
@@ -25,6 +42,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Npgsql" Version="9.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Views\SalesTransaction\" />
   </ItemGroup>
 
 </Project>

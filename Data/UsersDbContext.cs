@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SmartStock.Models;
-using SmartStock.DTO;
 
 namespace SmartStock.Data
 {

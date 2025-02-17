@@ -12,19 +12,15 @@ namespace SmartStock.Models
         [ForeignKey("ClientId")]
         public required string ClientId { get; set; }
 
-        [ForeignKey("Products")]
-        public required int ProductId { get; set; }
-
-        public Products Products { get; set; }
+        [ForeignKey("ProductSold")]
+        public ICollection<ProductSold> ProductSold { get; set; }
 
         public DateTime SoldTime { get; set; } = DateTime.UtcNow;
 
-        public int QuantitySold { get; set; }
+        public required string PaymentMethod { get; set; }
 
-        public decimal SoldPrice { get; set; }
+        public decimal TotalRevenue { get; set; }
 
-        public decimal TotalRevenue => SoldPrice * QuantitySold;
-
-        public decimal PriceDifference => Products.Price - SoldPrice;
+        public decimal PriceDifference { get; set; }
     }
 }

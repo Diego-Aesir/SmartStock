@@ -15,12 +15,16 @@ namespace SmartStock.Models
 
         public ICollection<SalesTransaction> SalesData { get; set; } = new List<SalesTransaction>();
 
-        public decimal TotalRevenue => SalesData.Sum(s => s.TotalRevenue);
+        public decimal TotalRevenue { get; set; }
 
-        public int TotalQuantitySold => SalesData.Sum(s => s.QuantitySold);
+        public int TotalQuantitySold { get; set; }
 
-        public decimal AveragePriceSold => SalesData.Average(s => s.SoldPrice);
+        public decimal AveragePriceSold { get; set; }
 
-        public decimal PercentageSoldWithDiscount => SalesData.Count() == 0 ? 0 : SalesData.Count(s => s.PriceDifference > 0) / (decimal)SalesData.Count() * 100;
+        public decimal PercentageSoldWithDiscount { get; set; }
+
+        public int MostSoldId { get; set; }
+
+        public required string BestClientId { get; set; }
     }
 }

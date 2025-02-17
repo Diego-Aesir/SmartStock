@@ -1,0 +1,14 @@
+﻿@model IEnumerable<SmartStock.Models.Stock>
+
+<h2>Stocks:</h2>
+
+@foreach (var stock in Model)
+{
+    <div class="d-flex align-items-center mb-3" style=" gap: 5px ">
+        <h4 class="mb-0">@stock.Name</h4>
+        <form method="post" asp-controller="Stock" asp-action="DeleteStock">
+            <input type="hidden" name="stockId" value="@stock.Id" />
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+    </div>
+}

@@ -1,0 +1,45 @@
+﻿@model Cart;
+
+@{
+    var productsInCart = ViewBag.ProductsInCart as IEnumerable<ProductInCart>;
+    var products = ViewBag.Products as IEnumerable<Products>;
+}
+
+@if (productsInCart != null && productsInCart.Any()) 
+{
+    <div>
+        @for (int i = 0; i < productsInCart.Count(); i++)
+        {
+            var productInCart = productsInCart.ElementAt(i);
+            var product = products.ElementAt(i);
+
+            <div>
+                <h3 style="cursor: pointer" onclick="window.location.href='@Url.Action("GetProduct", "Product", new {productId = product.Id})'">@product?.Title</h3>
+                <div style="display: flex; flex-direction: row; gap: 5px">
+                    <p>Quantity: @productInCart.Quantity</p>
+                    <form asp-action="AddAnotherToCart" asp-controller="Cart" method="post">
+                        <input type="hidden" name="productId" value="@productInCart?.Id" />
+                        <button type="submit" class="btn btn-outline-primary">+</button>
+                    </form>
+
+                    <form asp-action="RemoveOneFromCart" asp-controller="Cart" method="post">
+                        <input type="hidden" name="productId" value="@productInCart?.Id" />
+                        <button type="submit" class="btn btn-outline-primary">-</button>
+                    </form>
+
+                    <form asp-action="RemoveFromCart" asp-controller="Cart" method="post">
+                        <input type="hidden" name="productId" value="@productInCart?.Id" />
+                        <button type="submit" class="btn btn-outline-primary">Delete</button>
+                    </form>
+                </div>
+                <p>Preço: @(@product?.Price * @productInCart.Quantity)</p>
+            </div>
+        }
+    </div>
+    
+    <button class="btn btn-success">Buy Now</button>
+}
+else
+{
+    <h2>Your cart is empty...</h2>
+}

@@ -15,7 +15,7 @@ builder.Services.AddDbContext<SmartStockDbContext>(options =>
 
 builder.Services.AddDbContext<UsersDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("UserConnection"));
 });
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -37,14 +37,23 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/User/AccessDenied";
 });
 
+builder.Services.AddScoped<StockDbService>();
+builder.Services.AddScoped<ProductDbService>();
+builder.Services.AddScoped<ProductCategoryDbService>();
+
 builder.Services.AddScoped<UserDbService>();
+builder.Services.AddScoped<CartDbService>();
+builder.Services.AddScoped<ProductInCartDbService>();
+
+builder.Services.AddScoped<SalesTransactionDbService>();
+builder.Services.AddScoped<SalesReportDbService>();
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roleNames = { "Client", "Admin" };
+    string[] roleNames = { "Client", "Admin", "Employees" };
 
     foreach (var role in roleNames)
     {

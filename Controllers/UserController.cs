@@ -12,11 +12,13 @@ namespace SmartStock.Controllers
     {
         public readonly UserDbService _userDbService;
         private readonly SignInManager<User> _signInManager;
+        private readonly CartDbService _cartDbService;
 
-        public UserController(UserDbService userDbService, SignInManager<User> signInManager)
+        public UserController(UserDbService userDbService, SignInManager<User> signInManager, CartDbService cartDbService)
         {
             _userDbService = userDbService;
             _signInManager = signInManager;
+            _cartDbService = cartDbService;
         }
 
         [HttpGet]
@@ -32,13 +34,15 @@ namespace SmartStock.Controllers
             {
                 try
                 {
+                    int cartId = await _cartDbService.CreateCart();
+
                     User newUser = new User
                     {
                         UserName = user.UserName,
                         FullName = user.FullName,
                         Email = user.Email,
                         PhoneNumber = user.Phone,
-
+                        CartId = cartId
                     };
 
                     newUser = await _userDbService.CreateUser(newUser, user.Password);
@@ -54,6 +58,44 @@ namespace SmartStock.Controllers
 
             return View(user);
         }
+
+        [HttpGet]
+        public IActionResult CreateEmployee()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateEmployee(UserRegisterDTO user)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    int cartId = await _cartDbService.CreateCart();
+
+                    User newUser = new User
+                    {
+                        UserName = user.UserName,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        PhoneNumber = user.Phone,
+                        CartId = cartId
+                    };
+
+                    newUser = await _userDbService.CreateEmployee(newUser, user.Password);
+
+                    return RedirectToAction("Index", "Home");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
+            }
+
+            return View(user);
+        }
+
 
         [HttpGet]
         public IActionResult Login()
@@ -137,6 +179,7 @@ namespace SmartStock.Controllers
                         Email = user.Email ?? null,
                         PhoneNumber = user.Phone ?? null,
                         FullName = user.FullName ?? null,
+                        CartId = 0
                     };
 
                     await _userDbService.UpdateUser(updatedUser, user.Password);

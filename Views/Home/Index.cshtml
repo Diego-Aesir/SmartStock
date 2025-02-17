@@ -1,12 +1,42 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<SmartStock.Models.Products>
 
-@if (User.Identity.IsAuthenticated)
-{
-    <p>User logged: @User.Identity.Name</p>
-}
-else
-{
-    <p>Not logged</p>
-}
+
+<div style="width: 98vw; border: 1px solid red; padding: 1%; display: flex; flex-direction: row; height:85vh;">
+	<div style="border: 1px solid grey; height: 100%;  width: 10vw">
+
+		@if (User.IsInRole("Admin") || User.IsInRole("Employees"))
+		{
+			<div style="display: flex; flex-direction:column; gap: 5px; margin-top: 30px; width: 100%">
+				@if (User.IsInRole("Admin"))
+				{
+					<button onclick="window.location.href='@Url.Action("CreateEmployee", "User")'"> Create Employees </button>
+				}
+				<button onclick="window.location.href='@Url.Action("RegisterProduct", "Product")'">Create Product </button>
+				<button onclick="window.location.href='@Url.Action("CreateStock", "Stock")'">Create Stock </button>
+				<button onclick="window.location.href='@Url.Action("CreateCategory", "Category")'">Create Product Category </button>
+				<button>Generate Report </button>
+			</div>
+		}
+		else
+		{
+			@* Maybe a list of the Categories present on this Store *@
+			<p> Client view</p>
+		}
+	</div>
+	<div style="display: flex; flex-direction: column; gap: 8px; margin-left: 5vw">
+		<form asp-controller="Search" asp-action="GetSearch" method="post">
+			<input type="text" placeholder="Search any product" style="width: 80vw;" />
+		</form>
+		<h2>Recent Added: </h2>
+		<div>
+			@foreach (var item in Model)
+			{
+				<div>
+					@await Component.InvokeAsync("ProductComponent", new { product = item })
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+

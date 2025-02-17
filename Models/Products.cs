@@ -16,15 +16,19 @@ namespace SmartStock.Models
         [ForeignKey("ProductCategory")]
         public required int CategoryId { get; set; }
 
-        public ProductCategory Category { get; set; }
+        public ProductCategory? Category { get; set; }
 
         [ForeignKey("Stock")]
         public required int StockId { get; set; }
 
-        public Stock Stock { get; set; }
+        public Stock? Stock { get; set; }
 
-        public decimal Price { get; set; }
+        public required decimal Price { get; set; }
 
         public required int QuantityInStock { get; set; }
+
+        [Required(ErrorMessage = "The Added Time field is required.")]
+        [DataType(DataType.DateTime, ErrorMessage = "Invalid DateTime format.")]
+        public required DateTime AddedTime { get; set; }
     }
 }

@@ -1,0 +1,43 @@
+﻿@model SmartStock.Models.Products
+
+<div class="card mb-4 shadow-sm" style="max-width: 18rem; cursor: pointer" onclick="window.location.href='@Url.Action("GetProduct", "Product", new { productId = Model.Id })';">
+    <div class="card-body position-relative">
+        <h5 class="card-title text-center text-primary font-weight-bold">@Model.Title</h5>
+
+        <div class="position-absolute top-0 end-0 m-2">
+            @if (Model.QuantityInStock > 0)
+            {
+                <span class="badge bg-success">@Model.QuantityInStock Available</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Sold Out</span>
+            }
+        </div>
+        <img src="" alt="@Model.Title">
+        <h6 class="mt-2 text-center text-success">@Model.Price.ToString("C")</h6>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <form asp-action="AddToCart" asp-controller="Cart" method="post">
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <button type="submit" class="btn btn-outline-primary">Add to Cart</button>
+        </form>
+
+        @* Buy now could be a add to cart method + go to finalize *@
+        <button class="btn btn-success">Buy Now</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var referer = document.referer;
+        var refererInput = document.createElement("input");
+        refererInput.type = "hidden";
+        refererInput.name = "Referer";
+        refererInput.value = referer;
+
+        document.forms[0].appendChild(refererInput);
+    </script>
+}
+
+

@@ -40,6 +40,20 @@ namespace SmartStock.Services.DatabaseServices
             return user;
         }
 
+        public async Task<User> CreateEmployee(User user, string password)
+        {
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (!result.Succeeded)
+            {
+                var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"User could not be created. Errors: {errorMessage}");
+            }
+            await _userManager.AddToRoleAsync(user, "Employees");
+
+            return user;
+        }
+
         public async Task<User> UpdateUser(User updatedUser, string? newPassword)
         {
             var oldUser = await GetUserById(updatedUser.Id);

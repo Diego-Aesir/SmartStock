@@ -12,8 +12,8 @@ using SmartStock.Data;
 namespace SmartStock.Migrations
 {
     [DbContext(typeof(UsersDbContext))]
-    [Migration("20250131160117_ClientRoleAdd")]
-    partial class ClientRoleAdd
+    [Migration("20250206165233_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,6 +163,9 @@ namespace SmartStock.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CartId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")

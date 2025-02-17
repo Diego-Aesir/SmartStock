@@ -16,5 +16,11 @@ namespace SmartStock.Data
         DbSet<SalesReport> SalesReports { get; set; }
 
         DbSet<SalesTransaction> SalesTransactions { get; set; }
+
+        DbSet<Cart> Carts { get; set; }
+
+        DbSet<ProductInCart> ProductsInCart { get; set; }
+
+        DbSet<ProductSold> ProductsSold { get; set; }
     }
 }

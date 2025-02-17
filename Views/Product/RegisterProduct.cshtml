@@ -1,0 +1,67 @@
+﻿@model SmartStock.Models.Products
+
+<h4>New Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-controller="Product" asp-action="RegisterProduct" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class ="form-control">
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option value="@category.Id"> @category.Title</option>
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StockId" class="control-label"></label>
+                <select asp-for="StockId" class ="form-control">
+                    @foreach (var stock in ViewBag.Stocks)
+                    {
+                        <option value="@stock.Id">@stock.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="StockId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input type="number" asp-for="Price" class="form-control" step=".01"/>
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuantityInStock" class="control-label"></label>
+                <input asp-for="QuantityInStock" class="form-control" />
+                <span asp-validation-for="QuantityInStock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AddedTime" class="control-label"></label>
+                <input asp-for="AddedTime" class="form-control" />
+                <span asp-validation-for="AddedTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        document.getElementById("AddedTime").value = new Date().toISOString().slice(0, 16);
+    </script>
+}
