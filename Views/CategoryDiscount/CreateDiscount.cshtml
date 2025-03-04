@@ -1,0 +1,164 @@
+﻿@model CategoryDiscount
+
+@{
+	ViewData["Title"] = "CreateDiscount";
+}
+
+<h4>Create New Category Discount</h4>
+<hr />
+<div class="container">
+	<div class="row">
+		<div class="col-md-6">
+			<div class="category-container">
+				<div class="card">
+					<div class="card-header">
+						<h5>Create New Category Discount</h5>
+					</div>
+					<div class="card-body">
+						<form asp-action="CreateDiscount" method="post">
+							<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+							<div class="form-group">
+								<label asp-for="Title" class="control-label">Discount Title</label>
+								<input type="text" asp-for="Title" class="form-control" required />
+								<span asp-validation-for="Title" class="text-danger"></span>
+							</div>
+
+							<div class="form-group">
+								<label asp-for="Discount" class="control-label">Discount Value</label>
+								<input type="number" step=".01" asp-for="Discount" class="form-control" required />
+								<span asp-validation-for="Discount" class="text-danger"></span>
+							</div>
+
+							<div class="form-group">
+								<label asp-for="ProductCategoryId" class="control-label">Which Category?</label>
+								<select asp-for="ProductCategoryId" class="form-control" asp-items="ViewBag.ProductCategoryId">
+									<option value="">-- Select a Category --</option>
+								</select>
+							</div>
+
+							<div class="form-group">
+								<label asp-for="DiscountStartDate" class="control-label">Start Date</label>
+								<input type="datetime-local" asp-for="DiscountStartDate" class="form-control" />
+								<span asp-validation-for="DiscountStartDate" class="text-danger"></span>
+							</div>
+
+							<div class="form-group">
+								<label asp-for="DiscountEndDate" class="control-label">End Date</label>
+								<input type="datetime-local" asp-for="DiscountEndDate" class="form-control" />
+								<span asp-validation-for="DiscountEndDate" class="text-danger"></span>
+							</div>
+
+							<div class="form-group form-check">
+								<label class="form-check-label">
+									<input class="form-check-input" asp-for="IsApplied" />
+									<p>Apply discount after creation?</p>
+								</label>
+							</div>
+
+							<div class="form-group form-check">
+								<label class="form-check-label">
+									<input class="form-check-input" asp-for="IsManuallyUpdated" />
+									<p>Discount will be manually applied?</p>
+								</label>
+							</div>
+
+							<div class="form-group">
+								<input type="submit" value="Create" class="btn btn-primary" />
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div>
+				@await Component.InvokeAsync("DiscountComponent")
+			</div>
+		</div>
+	</div>
+</div>
+
+<hr />
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
+
+<style>
+	.container {
+		display: flex;
+		justify-content: space-between;
+		margin: 40px;
+	}
+
+	.category-container {
+		background-color: #f9f9f9;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.card {
+		border: none;
+		border-radius: 8px;
+		background-color: #fff;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	.card-header {
+		background-color: #f1f1f1;
+		padding: 15px;
+		border-radius: 8px 8px 0 0;
+	}
+
+	.card-body {
+		padding: 25px;
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+		.form-group label {
+			font-weight: bold;
+			font-size: 16px;
+			color: #333;
+		}
+
+	.form-control {
+		border-radius: 4px;
+		border: 1px solid #ccc;
+		padding: 10px;
+		font-size: 14px;
+		width: 100%;
+	}
+
+		.form-control:focus {
+			border-color: #007bff;
+			box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+		}
+
+	.btn-primary {
+		background-color: #007bff;
+		border-color: #007bff;
+		padding: 10px 15px;
+		font-size: 16px;
+		width: 100%;
+		cursor: pointer;
+	}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			border-color: #004085;
+		}
+
+	hr {
+		margin-top: 40px;
+		margin-bottom: 40px;
+		border: 1px solid #ddd;
+	}
+</style>

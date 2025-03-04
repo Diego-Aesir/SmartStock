@@ -1,10 +1,10 @@
 ﻿@model SmartStock.Models.Products
 
-<div class="card mb-4 shadow-sm" style="max-width: 18rem; cursor: pointer" onclick="window.location.href='@Url.Action("GetProduct", "Product", new { productId = Model.Id })';">
-    <div class="card-body position-relative">
+<div class="card mb-4 shadow-sm product-card" style="max-width: 18rem; cursor: pointer;">
+    <div class="card-body position-relative" onclick="window.location.href='@Url.Action("GetProduct", "Product", new { productId = Model.Id })';">
         <h5 class="card-title text-center text-primary font-weight-bold">@Model.Title</h5>
 
-        <div class="position-absolute top-0 end-0 m-2">
+        <div class="stock-status position-absolute top-0 end-0 m-2">
             @if (Model.QuantityInStock > 0)
             {
                 <span class="badge bg-success">@Model.QuantityInStock Available</span>
@@ -14,30 +14,64 @@
                 <span class="badge bg-danger">Sold Out</span>
             }
         </div>
-        <img src="" alt="@Model.Title">
-        <h6 class="mt-2 text-center text-success">@Model.Price.ToString("C")</h6>
+
+        <img src="" alt="@Model.Title" class="product-image">
+
+        @if (Model.Discount > 0)
+        {
+            <h6 class="text-center text-danger product-price"><del>@Model.Price.ToString("C")</del></h6>
+            <h6 class="text-center text-success product-price">@((Model.Price * (1 - Model.Discount)).ToString("C"))</h6>
+        }
+        else
+        {
+            <h6 class="text-center text-success product-price">@Model.Price.ToString("C")</h6>
+        }
     </div>
-    <div class="card-footer d-flex justify-content-between">
-        <form asp-action="AddToCart" asp-controller="Cart" method="post">
+
+    <div class="card-footer d-flex justify-content-between align-items-center gap-3">
+        <form asp-action="AddToCart" asp-controller="Cart" method="post" class="w-50">
             <input type="hidden" name="productId" value="@Model.Id" />
-            <button type="submit" class="btn btn-outline-primary">Add to Cart</button>
+            <button type="submit" class="btn btn-outline-primary w-100">Add to Cart</button>
         </form>
 
-        @* Buy now could be a add to cart method + go to finalize *@
-        <button class="btn btn-success">Buy Now</button>
+        <button onclick="window.location.href='@Url.Action("FinalizeBuy", "SalesTransaction", new {productId = Model.Id})'" class="btn btn-success w-50">Buy Now</button>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        var referer = document.referer;
-        var refererInput = document.createElement("input");
-        refererInput.type = "hidden";
-        refererInput.name = "Referer";
-        refererInput.value = referer;
+<style>
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        document.forms[0].appendChild(refererInput);
-    </script>
-}
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
 
+    .product-image {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+        object-fit: cover;
+        max-height: 200px;
+    }
 
+    .product-price {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .card-footer {
+        padding: 1rem;
+    }
+
+    .add-to-cart-btn,
+    .buy-now-btn {
+        width: 100%;
+    }
+
+    .stock-status .badge {
+        font-size: 12px;
+        font-weight: normal;
+    }
+</style>

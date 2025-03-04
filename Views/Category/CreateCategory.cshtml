@@ -6,30 +6,28 @@
 
 <h4>Create New Category</h4>
 <hr />
-<div class="row">
-	<div class="col-md-6">
-		<div class="card">
-			<div class="card-header">
-				<h5>Create New Category</h5>
-			</div>
-			<div class="card-body">
-				<form asp-controller="Category" asp-action="CreateCategory" method="post">
-					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-					<div class="form-group">
-						<label asp-for="Title" class="control-label">Category Title</label>
-						<input asp-for="Title" class="form-control" />
-						<span asp-validation-for="Title" class="text-danger"></span>
-					</div>
-					<div class="form-group mt-3">
-						<label asp-for="Description" class="control-label">Description</label>
-						<input asp-for="Description" class="form-control" />
-						<span asp-validation-for="Description" class="text-danger"></span>
-					</div>
-					<div class="form-group mt-3">
-						<input type="submit" value="Create" class="btn btn-primary" />
-					</div>
-				</form>
-			</div>
+<div class="category-container">
+	<div class="card">
+		<div class="card-header">
+			<h5>Create New Category</h5>
+		</div>
+		<div class="card-body">
+			<form asp-controller="Category" asp-action="CreateCategory" method="post">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="form-group">
+					<label asp-for="Title" class="control-label">Category Title</label>
+					<input asp-for="Title" class="form-control" required />
+					<span asp-validation-for="Title" class="text-danger"></span>
+				</div>
+				<div class="form-group mt-3">
+					<label asp-for="Description" class="control-label">Description</label>
+					<input asp-for="Description" class="form-control" />
+					<span asp-validation-for="Description" class="text-danger"></span>
+				</div>
+				<div class="form-group mt-3">
+					<input type="submit" value="Create" class="btn btn-primary" />
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -44,14 +42,75 @@
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
-	<script>
-		var referer = document.referrer;
-
-		var refererInput = document.createElement("input");
-		refererInput.type = "hidden";
-		refererInput.name = "Referer";
-		refererInput.value = referer;
-
-		document.forms[0].appendChild(refererInput);
-	</script>
 }
+
+<style>
+	.category-container {
+		width: 50%;
+		margin: 40px auto;
+		background-color: #f9f9f9;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.card {
+		border: none;
+		border-radius: 8px;
+		background-color: #fff;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	.card-header {
+		background-color: #f1f1f1;
+		padding: 15px;
+		border-radius: 8px 8px 0 0;
+	}
+
+	.card-body {
+		padding: 25px;
+	}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+		.form-group label {
+			font-weight: bold;
+			font-size: 16px;
+			color: #333;
+		}
+
+	.form-control {
+		border-radius: 4px;
+		border: 1px solid #ccc;
+		padding: 10px;
+		font-size: 14px;
+		width: 100%;
+	}
+
+		.form-control:focus {
+			border-color: #007bff;
+			box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+		}
+
+	.btn-primary {
+		background-color: #007bff;
+		border-color: #007bff;
+		padding: 10px 15px;
+		font-size: 16px;
+		width: 100%;
+		cursor: pointer;
+	}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
+			border-color: #004085;
+		}
+
+	hr {
+		margin-top: 40px;
+		margin-bottom: 40px;
+		border: 1px solid #ddd;
+	}
+</style>

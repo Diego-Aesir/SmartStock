@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.RenderTree;
 using Microsoft.AspNetCore.Mvc;
 using SmartStock.Models;
 using SmartStock.Services.DatabaseServices;
@@ -9,10 +8,12 @@ namespace SmartStock.Controllers
     public class CategoryController : Controller
     {
         private readonly ProductCategoryDbService _productCategoryDbService;
+        private readonly ProductDbService _productDbService;
 
-        public CategoryController(ProductCategoryDbService productCategoryDbService)
+        public CategoryController(ProductCategoryDbService productCategoryDbService, ProductDbService productDbService)
         {
             _productCategoryDbService = productCategoryDbService;
+            _productDbService = productDbService;
         }
 
         [HttpGet]
@@ -24,8 +25,9 @@ namespace SmartStock.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Employees")]
-        public async Task<IActionResult> CreateCategory(ProductCategory productCategory, string? Referer)
+        public async Task<IActionResult> CreateCategory(ProductCategory productCategory)
         {
+            var referer = Request.Headers["Referer"].ToString();
             if (ModelState.IsValid)
             {
                 try
@@ -37,7 +39,7 @@ namespace SmartStock.Controllers
                         if (category.Title == productCategory.Title && category.Description == productCategory.Description) 
                         {
                             ModelState.AddModelError("", "Category already exists");
-                            return Redirect(Referer);
+                            return Redirect(referer);
                         }
                     }
 
@@ -48,7 +50,22 @@ namespace SmartStock.Controllers
                     ModelState.AddModelError("", ex.Message);
                 }
             }
-            return View();
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+
+            return View(productCategory);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategory(int categoryId)
+        {
+            var products = await _productDbService.GetAllProductsFromCategoryId(categoryId);
+            return View(products);
         }
 
         [HttpGet]
@@ -60,17 +77,18 @@ namespace SmartStock.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Employees")]
-        public async Task<IActionResult> UpdateCategory(ProductCategory productCategory, string? Referer)
+        public async Task<IActionResult> UpdateCategory(ProductCategory productCategory)
         {
+            var referer = Request.Headers["Referer"].ToString();
             if (ModelState.IsValid)
             {
                 try
                 {
                     await _productCategoryDbService.UpdateProductCategory(productCategory);
 
-                    if (!string.IsNullOrEmpty(Referer))
+                    if (!string.IsNullOrEmpty(referer))
                     {
-                        return Redirect(Referer);
+                        return Redirect(referer);
                     }
 
                     return RedirectToAction("Index", "Home");

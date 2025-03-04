@@ -12,7 +12,6 @@ namespace SmartStock.Models
         [ForeignKey("ClientId")]
         public required string ClientId { get; set; }
 
-        [ForeignKey("ProductSold")]
         public ICollection<ProductSold> ProductSold { get; set; }
 
         public DateTime SoldTime { get; set; } = DateTime.UtcNow;
@@ -21,6 +20,6 @@ namespace SmartStock.Models
 
         public decimal TotalRevenue { get; set; }
 
-        public decimal PriceDifference { get; set; }
+        public decimal SaleDiscount { get; set; }
     }
 }

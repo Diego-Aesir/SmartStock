@@ -1,0 +1,119 @@
+﻿@model IEnumerable<CategoryDiscount>
+
+<div class="discount-list-container">
+    @foreach (var discount in Model)
+    {
+        <div class="discount-item d-flex align-items-center mb-4">
+            <div class="discount-info" onclick="window.location.href='@Url.Action("UpdateDiscount", "CategoryDiscount", new {discountId = discount.Id})'">
+                <h4 class="discount-title mb-0">@discount.Title</h4>
+                <h4 class="discount-amount mb-0">@discount.Discount</h4>
+                <h4 class="discount-start-date mb-0">@discount.DiscountStartDate</h4>
+                <h4 class="discount-end-date mb-0">@discount.DiscountEndDate</h4>
+            </div>
+            <div class="discount-actions d-flex">
+                @if (!discount.IsApplied)
+                {
+                    <form method="post" asp-controller="CategoryDiscount" asp-action="ApplyDiscount">
+                        <button class="btn btn-success btn-sm apply-btn">Apply</button>
+                        <input type="hidden" name="discountId" value="@discount.Id" />
+                    </form>
+                }
+                else
+                {
+                    <form method="post" asp-controller="CategoryDiscount" asp-action="DisableDiscount">
+                        <button class="btn btn-warning btn-sm disable-btn">Disable</button>
+                        <input type="hidden" name="discountId" value="@discount.Id" />
+                    </form>
+                }
+                <form method="post" asp-controller="CategoryDiscount" asp-action="DeleteDiscount" class="delete-form">
+                    <input type="hidden" name="discountId" value="@discount.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .discount-list-container {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .discount-item {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .discount-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .discount-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .discount-amount,
+    .discount-start-date,
+    .discount-end-date {
+        font-size: 16px;
+        color: #555;
+    }
+
+    .discount-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .apply-btn,
+    .disable-btn,
+    .delete-btn {
+        font-size: 14px;
+        padding: 6px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .apply-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+    }
+
+        .apply-btn:hover {
+            background-color: #218838;
+        }
+
+    .disable-btn {
+        background-color: #ffc107;
+        color: white;
+        border: none;
+    }
+
+        .disable-btn:hover {
+            background-color: #e0a800;
+        }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+    }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+</style>

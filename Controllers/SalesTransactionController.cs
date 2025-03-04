@@ -14,7 +14,9 @@ namespace SmartStock.Controllers
         private readonly ProductDbService _productDbService;
         private readonly SalesTransactionDbService _salesTransactionDbService;
 
-        public SalesTransactionController(UserDbService userDbService, CartDbService cartDbService, ProductInCartDbService productInCartDbService, ProductDbService productDbService, SalesTransactionDbService salesTransactionDbService)
+        public SalesTransactionController(UserDbService userDbService, CartDbService cartDbService,
+                                            ProductInCartDbService productInCartDbService,
+                                            ProductDbService productDbService, SalesTransactionDbService salesTransactionDbService)
         {
             _cartDbService = cartDbService;
             _productInCartDbService = productInCartDbService;
@@ -34,14 +36,15 @@ namespace SmartStock.Controllers
             }
 
             var userCart = await _cartDbService.GetCartById(user.CartId);
+            ViewBag.CartId = userCart.Id;
 
             if (productId != null)
             {
-                var product = await _productDbService.GetProduct(productId.Value);
+                var productOnStock = await _productDbService.GetProduct(productId.Value);
 
-                if (product.QuantityInStock <= 0)
+                if (productOnStock.QuantityInStock <= 0)
                 {
-                    return RedirectToAction("GetProduct", "Product", new { productId = product.Id });
+                    return RedirectToAction("GetProduct", "Product", new { productId = productOnStock.Id });
                 }
 
                 var productsAlreadyInCart = await _productInCartDbService.GetAllProductsFromCartId(userCart.Id);
@@ -61,49 +64,59 @@ namespace SmartStock.Controllers
                 };
 
                 await _productInCartDbService.CreateProductInCart(productInCart);
-                await _productDbService.ChangeProductQuantity(productId.Value, product.QuantityInStock - 1);
+                await _productDbService.ChangeProductQuantity(productId.Value, productOnStock.QuantityInStock - 1);
             }
 
-            var products = await _productInCartDbService.GetProductInCartById(userCart.Id);
-            return View(products);
+            var products = await _productInCartDbService.GetAllProductsFromCartId(userCart.Id);
+            ViewBag.ProductInCart = products;
+
+            List<Products> product = new List<Products>();
+            foreach (var pr in products) {
+                product.Add(await _productDbService.GetProduct(pr.ProductId));
+            }
+            return View(product);
         }
 
         [HttpPost]
         [Authorize]
-        public async Task FinalizeBuy(int cartId, int paymentOpt)
+        public async Task<IActionResult> FinalizeBuy(int cartId, int paymentOpt, decimal discount)
         {
             var user = await _userDbService.GetUserById(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             if (user == null)
             {
-                return;
+                return RedirectToAction("Login", "User");
             }
 
             switch (paymentOpt)
             {
                 case 0:
-                    ViewBag.Paid = "Cash";
+                    ViewBag.PaymentMethod = "Cash";
                     break;
                 case 1:
-                    ViewBag.Paid = "CreditCard";
+                    ViewBag.PaymentMethod = "CreditCard";
                     break;
                 case 2:
-                    ViewBag.Paid = "SmartStoreCredit";
+                    ViewBag.PaymentMethod = "SmartStoreCredit";
                     break;
             }
-
-
-            /*
 
             SalesTransaction sale = new()
             {
                 ClientId = user.Id,
+                PaymentMethod = ViewBag.PaymentMethod,
+                SaleDiscount = discount
+            };
 
+            int saleId = await _salesTransactionDbService.CreateTransaction(sale);
+            await _salesTransactionDbService.CompleteTransaction(saleId, cartId);
+            return RedirectToAction("Thanks");
+        }
 
-            }
-            await _salesTransactionDbService.CreateTransaction();
-            */
-
-            //Salvar nova Sale no Bd
+        [HttpGet]
+        [Authorize]
+        public IActionResult Thanks()
+        {
+            return View();
         }
     }
 }

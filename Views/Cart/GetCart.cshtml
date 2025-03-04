@@ -5,41 +5,119 @@
     var products = ViewBag.Products as IEnumerable<Products>;
 }
 
-@if (productsInCart != null && productsInCart.Any()) 
+@if (productsInCart != null && productsInCart.Any())
 {
-    <div>
+    <div class="cart-container">
         @for (int i = 0; i < productsInCart.Count(); i++)
         {
             var productInCart = productsInCart.ElementAt(i);
             var product = products.ElementAt(i);
 
-            <div>
-                <h3 style="cursor: pointer" onclick="window.location.href='@Url.Action("GetProduct", "Product", new {productId = product.Id})'">@product?.Title</h3>
-                <div style="display: flex; flex-direction: row; gap: 5px">
-                    <p>Quantity: @productInCart.Quantity</p>
-                    <form asp-action="AddAnotherToCart" asp-controller="Cart" method="post">
-                        <input type="hidden" name="productId" value="@productInCart?.Id" />
-                        <button type="submit" class="btn btn-outline-primary">+</button>
-                    </form>
-
-                    <form asp-action="RemoveOneFromCart" asp-controller="Cart" method="post">
-                        <input type="hidden" name="productId" value="@productInCart?.Id" />
-                        <button type="submit" class="btn btn-outline-primary">-</button>
-                    </form>
-
-                    <form asp-action="RemoveFromCart" asp-controller="Cart" method="post">
-                        <input type="hidden" name="productId" value="@productInCart?.Id" />
-                        <button type="submit" class="btn btn-outline-primary">Delete</button>
-                    </form>
+            <div class="cart-item">
+                <div class="cart-item-header">
+                    <h3 class="product-title" onclick="window.location.href='@Url.Action("GetProduct", "Product", new { productId = product.Id })'">
+                        @product?.Title
+                    </h3>
+                    @if(product?.Discount > 0) {
+                        <span class="product-price text-danger"><del>@((@product.Price * @productInCart.Quantity).ToString("C"))</del></span>
+                    }
+                    <span class="product-price">@(((@product.Price * (1 - product.Discount)) * @productInCart.Quantity).ToString("C"))</span>
                 </div>
-                <p>Preço: @(@product?.Price * @productInCart.Quantity)</p>
+
+                <div class="cart-item-actions">
+                    <p>Quantity: @productInCart.Quantity</p>
+
+                    <div class="action-buttons">
+                        <form asp-action="AddAnotherToCart" asp-controller="Cart" method="post">
+                            <input type="hidden" name="productId" value="@productInCart?.Id" />
+                            <button type="submit" class="btn btn-outline-primary">+</button>
+                        </form>
+
+                        <form asp-action="RemoveOneFromCart" asp-controller="Cart" method="post">
+                            <input type="hidden" name="productId" value="@productInCart?.Id" />
+                            <button type="submit" class="btn btn-outline-primary">-</button>
+                        </form>
+
+                        <form asp-action="RemoveFromCart" asp-controller="Cart" method="post">
+                            <input type="hidden" name="productId" value="@productInCart?.Id" />
+                            <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         }
+
+        <div class="cart-footer">
+            <button onclick="window.location.href='@Url.Action("FinalizeBuy", "SalesTransaction")'" class="btn btn-success">Buy Now</button>
+        </div>
     </div>
-    
-    <button class="btn btn-success">Buy Now</button>
 }
 else
 {
-    <h2>Your cart is empty...</h2>
+    <h2 class="empty-cart-message">Your cart is empty...</h2>
 }
+
+<style>
+    .cart-container {
+        margin: 20px auto;
+        width: 80%;
+        max-width: 900px;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-item {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 15px;
+    }
+
+    .cart-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .product-title {
+        font-size: 18px;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .product-price {
+        font-size: 16px;
+        font-weight: bold;
+        color: green;
+    }
+
+    .cart-item-actions {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .action-buttons form {
+        margin: 0;
+    }
+
+    .cart-footer {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .empty-cart-message {
+        text-align: center;
+        font-size: 24px;
+        color: #999;
+    }
+</style>

@@ -25,10 +25,15 @@ namespace SmartStock.Models
 
         public required decimal Price { get; set; }
 
+        public required decimal Discount { get; set; }
+
         public required int QuantityInStock { get; set; }
 
         [Required(ErrorMessage = "The Added Time field is required.")]
         [DataType(DataType.DateTime, ErrorMessage = "Invalid DateTime format.")]
         public required DateTime AddedTime { get; set; }
+
+        public required ICollection<ProductInCart> ProductInCart { get; set; } = new List<ProductInCart>();
+
     }
 }

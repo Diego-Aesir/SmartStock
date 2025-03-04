@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartStock.DTO
+namespace SmartStock.DTO.User
 {
     public class UserUpdateDTO
     {

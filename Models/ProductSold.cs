@@ -10,7 +10,7 @@ namespace SmartStock.Models
         public int Id { get; set; }
 
         [ForeignKey("SaleTransaction")]
-        public int SalesTransactionId;
+        public int SalesTransactionId { get; set; }
 
         public SalesTransaction SalesTransaction { get; set; }
     
@@ -20,5 +20,7 @@ namespace SmartStock.Models
 
         [ForeignKey("ProductId")]
         public required int ProductId { get; set; }
+
+        public required decimal Discount { get; set; }
     }
 }

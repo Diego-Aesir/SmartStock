@@ -1,76 +1,132 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - SmartStock</title>
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/SmartStock.styles.css" asp-append-version="true" />
-	<style>
-		.navbar-nav {
-			width: 8vw;
-		}
-	</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartStock</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SmartStock.styles.css" asp-append-version="true" />
+    <style>
+        .navbar-nav {
+            width: 8vw;
+        }
+
+        .navbar {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #007bff;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            font-size: 1rem;
+            padding: 0.8rem 1.5rem;
+        }
+
+            .navbar-nav .nav-item .nav-link:hover {
+                color: #0056b3;
+            }
+
+        .dropdown-menu .dropdown-item {
+            font-size: 1rem;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 10px;
+        }
+
+            footer a {
+                color: #007bff;
+                text-decoration: none;
+            }
+
+                footer a:hover {
+                    text-decoration: underline;
+                }
+
+        .cart-icon {
+            width: 40px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .navbar-toggler {
+            border-color: #007bff;
+        }
+
+        .navbar-toggler-icon {
+            background-color: #007bff;
+        }
+
+        }
+    </style>
 </head>
 <body>
-	<header>
-		<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
-			<div class="container-fluid">
-				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SmartStock</a>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SmartStock</a>
 
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
-						aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-				<div class="collapse navbar-collapse" id="navbarNav">
-					<ul class="navbar-nav ms-auto">
-						@if (User.Identity.IsAuthenticated)
-						{
-							<img src="~/cart.png" alt="Cart Icon" style="width: 40px; height: 30px;" onclick="window.location.href='@Url.Action("GetCart", "Cart")'"/>
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-									Settings
-								</a>
-								<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-									<li>
-										<a class="dropdown-item" asp-controller="User" asp-action="Update">Update Information</a>
-									</li>
-									<li>
-										<form asp-controller="User" asp-action="Logout" method="post">
-											<button class="dropdown-item" type="submit">Logout</button>
-										</form>
-									</li>
-								</ul>
-							</li>
-						}
-						else
-						{
-							<li class="nav-item">
-								<a class="nav-link" asp-controller="User" asp-action="Login">Login/Register</a>
-							</li>
-						}
-					</ul>
-				</div>
-			</div>
-		</nav>
-	</header>
-	<div>
-		<main role="main" class="pb-3" style="margin-left: 10px; margin-right: 10px">
-			@RenderBody()
-		</main>
-	</div>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <img src="~/cart.png" alt="Cart Icon" class="cart-icon" onclick="window.location.href='@Url.Action("GetCart", "Cart")'" />
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">Settings</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="User" asp-action="Update">Update Information</a>
+                                    </li>
+                                    <li>
+                                        <form asp-controller="User" asp-action="Logout" method="post">
+                                            <button class="dropdown-item" type="submit">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="User" asp-action="Login">Login/Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-	<footer class="border-top footer text-muted">
-		<div class="container">
-			&copy; 2025 - SmartStock
-		</div>
-	</footer>
+    <div>
+        <main role="main" class="pb-3" style="margin-left: 10px; margin-right: 10px">
+            @RenderBody()
+        </main>
+    </div>
 
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
-	@await RenderSectionAsync("Scripts", required: false)
+    <footer class="footer text-muted">
+        <div class="container">
+            &copy; 2025 - SmartStock
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

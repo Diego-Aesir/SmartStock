@@ -19,8 +19,8 @@ namespace SmartStock.Services.DatabaseServices
         {
             using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
             {
-                string query = @"INSERT INTO ""ProductsSold"" (""SalesTransactionId"", ""QuantitySold"", ""SoldPrice"", ""ProductId"")
-                                    VALUES (@SalesTransactionId, @QuantitySold, @SoldPrice, @ProductId)
+                string query = @"INSERT INTO ""ProductsSold"" (""SalesTransactionId"", ""Quantity"", ""SoldPrice"", ""ProductId"", ""Discount"")
+                                    VALUES (@SalesTransactionId, @Quantity, @SoldPrice, @ProductId, @Discount)
                                     RETURNING ""Id""";
 
                 
@@ -33,9 +33,10 @@ namespace SmartStock.Services.DatabaseServices
                 return await dbConnection.QueryFirstOrDefaultAsync<int>(query, new
                 {
                     SalesTransactionId = productSold.SalesTransactionId,
-                    QuantitySold = productSold.Quantity,
+                    Quantity = productSold.Quantity,
                     SoldPrice = productSold.SoldPrice,
-                    ProductId = productSold.ProductId
+                    ProductId = productSold.ProductId,
+                    Discount = productSold.Discount,
                 });
             }
         }
@@ -58,7 +59,7 @@ namespace SmartStock.Services.DatabaseServices
             }
         }
 
-        public async Task<int> DeleteTransaction(int saleId)
+        public async Task<int> DeleteProductSold(int saleId)
         {
             var productSold = await GetProductSold(saleId);
             if (productSold == null)

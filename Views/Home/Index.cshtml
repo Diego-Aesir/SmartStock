@@ -1,37 +1,48 @@
 ﻿@model IEnumerable<SmartStock.Models.Products>
 
-
-<div style="width: 98vw; border: 1px solid red; padding: 1%; display: flex; flex-direction: row; height:85vh;">
-	<div style="border: 1px solid grey; height: 100%;  width: 10vw">
-
+<div class="main-container">
+	<div class="sidebar">
 		@if (User.IsInRole("Admin") || User.IsInRole("Employees"))
 		{
-			<div style="display: flex; flex-direction:column; gap: 5px; margin-top: 30px; width: 100%">
+			<div class="sidebar-links">
 				@if (User.IsInRole("Admin"))
 				{
-					<button onclick="window.location.href='@Url.Action("CreateEmployee", "User")'"> Create Employees </button>
+					<button onclick="window.location.href='@Url.Action("CreateEmployee", "User")'" class="btn btn-sidebar">Create Employees</button>
 				}
-				<button onclick="window.location.href='@Url.Action("RegisterProduct", "Product")'">Create Product </button>
-				<button onclick="window.location.href='@Url.Action("CreateStock", "Stock")'">Create Stock </button>
-				<button onclick="window.location.href='@Url.Action("CreateCategory", "Category")'">Create Product Category </button>
-				<button>Generate Report </button>
+				<button onclick="window.location.href='@Url.Action("RegisterProduct", "Product")'" class="btn btn-sidebar">Create Product</button>
+				<button onclick="window.location.href='@Url.Action("CreateStock", "Stock")'" class="btn btn-sidebar">Create Stock</button>
+				<button onclick="window.location.href='@Url.Action("CreateCategory", "Category")'" class="btn btn-sidebar">Create Product Category</button>
+				<button onclick="window.location.href='@Url.Action("CreateDiscount", "CategoryDiscount")'" class="btn btn-sidebar">Create Category Discount </button>
+				<button class="btn btn-sidebar">Generate Report</button>
 			</div>
 		}
 		else
 		{
-			@* Maybe a list of the Categories present on this Store *@
-			<p> Client view</p>
+			<div class="category-buttons-container">
+				@foreach (var category in ViewBag.ProductCategories)
+				{
+					<button class="category-button" onclick="window.location.href='@Url.Action("GetCategory", "Category", new {categoryId = category.Id})'">
+						<span class="category-title">@category.Title</span>
+					</button>
+				}
+			</div>
 		}
 	</div>
-	<div style="display: flex; flex-direction: column; gap: 8px; margin-left: 5vw">
-		<form asp-controller="Search" asp-action="GetSearch" method="post">
-			<input type="text" placeholder="Search any product" style="width: 80vw;" />
+
+	<div class="content">
+		<form asp-controller="Search" asp-action="GetSearch" method="post" class="search-form">
+			<select class="categories-select" name="categoryId" asp-items="ViewBag.Categories">
+			</select>
+			<input id="searchInput" name="search" type="text" placeholder="Search any product" class="search-input" />
+			<img class="search-icon" src="~/search_icon.png" onclick="search" />
 		</form>
-		<h2>Recent Added: </h2>
-		<div>
+
+		<h2>Recent Added:</h2>
+
+		<div class="product-grid">
 			@foreach (var item in Model)
 			{
-				<div>
+				<div class="product-item">
 					@await Component.InvokeAsync("ProductComponent", new { product = item })
 				</div>
 			}
@@ -39,4 +50,160 @@
 	</div>
 </div>
 
+@section Scripts {
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			document.querySelector('.search-icon').addEventListener('click', search);
+		});
 
+		function search() {
+			var searchValue = document.getElementById("searchInput").value.trim();
+
+			if (searchValue) {
+				document.querySelector('form').submit();
+			} 
+		}
+	</script>
+}
+
+<style>
+	.main-container {
+		display: flex;
+		height: 85vh;
+		width: 98vw;
+		padding: 1%;
+		gap: 5px;
+	}
+
+	.sidebar {
+		border: 1px solid grey;
+		height: 100%;
+		width: 12vw;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+	}
+
+	.sidebar-links {
+		display: flex;
+		flex-direction: column;
+		margin-top: 30px;
+		gap: 5px;
+	}
+
+	.btn-sidebar {
+		width: 100%;
+		padding: 10px;
+		font-size: 16px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		text-align: center;
+	}
+
+		.btn-sidebar:hover {
+			background-color: #0056b3;
+			color: white;
+		}
+
+	.client-view-text {
+		font-size: 18px;
+		color: #555;
+		text-align: center;
+		margin-top: 50px;
+	}
+
+	.content {
+		flex-grow: 1;
+		margin-left: 2vw;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.search-form {
+		display: flex;
+		margin-bottom: 20px;
+		display: flex;
+		border: 1px solid #ccc;
+		gap: 4px;
+	}
+
+	.search-input {
+		width: 95%;
+		padding: 10px;
+		font-size: 16px;
+		border-radius: 5px;
+		border: 1px solid #ccc;
+	}
+
+	.categories-select {
+		width: auto;
+		border: 1px solid #ccc;
+		padding: 0.5%;
+	}
+
+	.search-icon {
+		position: relative;
+		width: 40px;
+		height: 30px;
+		cursor: pointer;
+		margin-top: 10px;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+
+	.product-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 15px;
+	}
+
+	.product-item {
+		background-color: #f9f9f9;
+		padding: 15px;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.category-buttons-container {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+		gap: 20px;
+		margin-top: 30px;
+	}
+
+	.category-button {
+		background-color: #f8f9fa;
+		border: none;
+		border-radius: 8px;
+		padding: 15px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		transition: all 0.3s ease-in-out;
+		cursor: pointer;
+		text-align: center;
+	}
+
+		.category-button:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+		}
+
+	.category-title {
+		font-size: 18px;
+		font-weight: bold;
+		color: #333;
+		text-transform: capitalize;
+	}
+
+	.category-button:focus {
+		outline: none;
+	}
+</style>

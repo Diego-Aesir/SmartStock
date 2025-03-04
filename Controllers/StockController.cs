@@ -23,8 +23,9 @@ namespace SmartStock.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Employees")]
-        public async Task<IActionResult> CreateStock(Stock stock, string? Referer)
+        public async Task<IActionResult> CreateStock(Stock stock)
         {
+            var referer = Request.Headers["Referer"].ToString();
             if (ModelState.IsValid)
             {
                 try
@@ -36,15 +37,15 @@ namespace SmartStock.Controllers
                         if (stockExist.Name == stock.Name)
                         {
                             ModelState.AddModelError("", "Stock already exists");
-                            return Redirect(Referer);
+                            return Redirect(referer);
                         }
                     }
 
                     await _stockDbService.CreateStockAsync(stock);
 
-                    if (!string.IsNullOrEmpty(Referer))
+                    if (!string.IsNullOrEmpty(referer))
                     {
-                        return Redirect(Referer);
+                        return Redirect(referer);
                     }
 
                     return RedirectToAction("Index", "Home");

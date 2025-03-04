@@ -9,20 +9,23 @@ namespace SmartStock.Services.DatabaseServices
         private readonly string connectionString;
         private readonly ProductDbService _productDbService;
         private readonly ProductSoldDbService _productSoldDbService;
+        private readonly ProductInCartDbService _productInCartDbService;
 
-        public SalesTransactionDbService(IConfiguration configuration, ProductDbService productDbService, ProductSoldDbService productSoldDbService)
+        public SalesTransactionDbService(IConfiguration configuration, ProductDbService productDbService,
+                                         ProductSoldDbService productSoldDbService, ProductInCartDbService productInCartDbService)
         {
             connectionString = configuration.GetConnectionString("DefaultConnection");
             _productDbService = productDbService;
             _productSoldDbService = productSoldDbService;
+            _productInCartDbService = productInCartDbService;
         }
 
         public async Task<int> CreateTransaction(SalesTransaction sale)
         {
             using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
             {
-                string query = @"INSERT INTO ""SalesTransactions"" (""ClientId"", ""SoldTime"", ""PaymentMethod"", ""TotalRevenue"", ""PriceDifference"")
-                                    VALUES (@ClientId, @SoldTime, @PaymentMethod, @TotalRevenue, @PriceDifference)
+                string query = @"INSERT INTO ""SalesTransactions"" (""ClientId"", ""SoldTime"", ""PaymentMethod"", ""TotalRevenue"", ""SaleDiscount"")
+                                    VALUES (@ClientId, @SoldTime, @PaymentMethod, @TotalRevenue, @SaleDiscount)
                                     RETURNING ""Id""";
 
                 return await dbConnection.QueryFirstOrDefaultAsync<int>(query, new
@@ -31,7 +34,7 @@ namespace SmartStock.Services.DatabaseServices
                     SoldTime = sale.SoldTime,
                     PaymentMethod = sale.PaymentMethod,
                     TotalRevenue = 0,
-                    PriceDifference = 0
+                    SaleDiscount = sale.SaleDiscount
                 });
             }
         }
@@ -45,34 +48,72 @@ namespace SmartStock.Services.DatabaseServices
             }
         }
 
-        public async Task<SalesTransaction> AddProductSoldToTransaction(ProductSold product)
+        public async Task<SalesTransaction> TransactionProduct(int salesTransactionId, ProductInCart productInCart)
         {
+            var transaction = await GetTransaction(salesTransactionId);
+            if (transaction == null)
+            {
+                throw new Exception("Transaction not found");
+            }
+
+            var productExist = await _productDbService.GetProduct(productInCart.ProductId);
+            if (productExist == null)
+            {
+                throw new Exception("Product not found");
+            }
+
+            decimal finalPrice = productExist.Price * (1 - productExist.Discount);
+
+            ProductSold productSold = new()
+            {
+                ProductId = productInCart.ProductId,
+                SalesTransactionId = salesTransactionId,
+                Quantity = productInCart.Quantity,
+                SoldPrice = finalPrice,
+                Discount = productExist.Discount
+            };
+
+            await _productSoldDbService.CreateProductSold(productSold);
+
+            await _productInCartDbService.DeleteProductInCart(productInCart.Id);
+
             using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
             {
-                var transaction = await GetTransaction(product.SalesTransactionId);
-                if (transaction == null)
-                {
-                    throw new Exception("Transaction not found");
-                }
-
-                var productExist = await _productDbService.GetProduct(product.ProductId);
-                if (productExist == null)
-                {
-                    throw new Exception("Product not found");
-                }
-
-                string query = @"UPDATE ""SalesTransactions"" SET ""TotalRevenue"" = @TotalRevenue, ""PriceDifference"" = @PriceDifference WHERE ""Id"" = @Id  RETURNING *";
-                await _productSoldDbService.CreateProductSold(product);
-
+                string query = @"UPDATE ""SalesTransactions"" SET ""TotalRevenue"" = @TotalRevenue WHERE ""Id"" = @Id  RETURNING *";
                 return await dbConnection.QueryFirstAsync<SalesTransaction>(query, new
                 {
-                    TotalRevenue = transaction.TotalRevenue + (product.SoldPrice * product.Quantity),
-                    PriceDifference = productExist.Price - product.SoldPrice,
-                    Id = product.SalesTransactionId
+                    TotalRevenue = transaction.TotalRevenue + (productSold.SoldPrice * productSold.Quantity),
+                    Id = salesTransactionId
                 });
             }
         }
-        
+
+        public async Task<SalesTransaction> CompleteTransaction(int salesTransactionId, int cartId) 
+        {
+            var transaction = await GetTransaction(salesTransactionId);
+            if (transaction == null)
+            {
+                throw new Exception("Transaction not found");
+            }
+
+            var products = await _productInCartDbService.GetAllProductsFromCartId(cartId);
+            foreach (var product in products)
+            {
+               await TransactionProduct(salesTransactionId, product);
+            }
+
+            using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
+            {
+                transaction = await GetTransaction(salesTransactionId);
+
+                string query = @"UPDATE ""SalesTransactions"" SET ""TotalRevenue"" = @TotalRevenue WHERE ""Id"" = @Id  RETURNING *";
+                return await dbConnection.QueryFirstAsync<SalesTransaction>(query, new
+                {
+                    TotalRevenue = transaction.TotalRevenue * (1 - transaction.SaleDiscount),
+                    Id = salesTransactionId
+                });
+            }
+        }
 
         public async Task<IEnumerable<SalesTransaction>> GetAllTransactionsWithinDateRange(DateTime startDate, DateTime endDate)
         {

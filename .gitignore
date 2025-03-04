@@ -12,3 +12,5 @@ Dockerfile
 appsettings.Development.json
 
 *.log
+
+Migrations

@@ -36,15 +36,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    <script>
-        var referer = document.referrer;
-
-        var refererInput = document.createElement('input');
-        refererInput.type = 'hidden';
-        refererInput.name = 'Referer';
-        refererInput.value = referer;
-
-        document.forms[0].appendChild(refererInput);
-    </script>
 }

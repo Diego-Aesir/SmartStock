@@ -13,6 +13,8 @@ namespace SmartStock.Data
 
         DbSet<ProductCategory> ProductCategories { get; set; }
 
+        DbSet<CategoryDiscount> CategoryDiscount { get; set; }
+
         DbSet<SalesReport> SalesReports { get; set; }
 
         DbSet<SalesTransaction> SalesTransactions { get; set; }

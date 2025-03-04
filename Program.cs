@@ -40,12 +40,14 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<StockDbService>();
 builder.Services.AddScoped<ProductDbService>();
 builder.Services.AddScoped<ProductCategoryDbService>();
+builder.Services.AddScoped<CategoryDiscountDbService>();
 
 builder.Services.AddScoped<UserDbService>();
 builder.Services.AddScoped<CartDbService>();
 builder.Services.AddScoped<ProductInCartDbService>();
 
 builder.Services.AddScoped<SalesTransactionDbService>();
+builder.Services.AddScoped<ProductSoldDbService>();
 builder.Services.AddScoped<SalesReportDbService>();
 
 var app = builder.Build();

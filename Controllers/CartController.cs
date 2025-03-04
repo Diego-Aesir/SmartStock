@@ -51,8 +51,9 @@ namespace SmartStock.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddToCart(int productId, string Referer)
+        public async Task<IActionResult> AddToCart(int productId, float discount)
         {
+            var referer = Request.Headers["Referer"].ToString();
             if (ModelState.IsValid)
             {
                 try
@@ -66,7 +67,6 @@ namespace SmartStock.Controllers
                     var userCart = await _cartDbService.GetCartById(user.CartId);
 
                     var product = await _productDbService.GetProduct(productId);
-
                     if (product.QuantityInStock <= 0)
                     {
                         return RedirectToAction("GetProduct", "Product", new { productId = product.Id });
@@ -81,17 +81,18 @@ namespace SmartStock.Controllers
                         }
                     }
 
+
                     ProductInCart productInCart = new()
                     {
                         CartId = userCart.Id,
                         ProductId = productId,
-                        Quantity = 1
+                        Quantity = 1,
                     };
 
                     await _productInCartDbService.CreateProductInCart(productInCart);
                     await _productDbService.ChangeProductQuantity(productId, product.QuantityInStock - 1);
 
-                    return Redirect(Referer);
+                    return Redirect(referer);
                 }
                 catch (Exception)
                 {

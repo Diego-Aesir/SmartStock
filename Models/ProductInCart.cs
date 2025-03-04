@@ -19,6 +19,6 @@ namespace SmartStock.Models
 
         public Products Products { get; set; }
 
-        public int Quantity { get; set; }
+        public required int Quantity { get; set; }
     }
 }

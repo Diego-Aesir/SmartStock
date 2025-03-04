@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Products>
+
+<div class="product-grid">
+	@foreach (var item in Model)
+	{
+		<div class="product-item">
+			@await Component.InvokeAsync("ProductComponent", new { product = item })
+		</div>
+	}
+</div>
+
+@if(!Model.Any()) {
+	<h2>Sorry we don't have any Product from this Category ☹️</h2>
+}
+
+<style>
+	.product-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 15px;
+		padding: 1%;
+	}
+
+	.product-item {
+		background-color: #f9f9f9;
+		padding: 15px;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+</style>

@@ -18,8 +18,8 @@ namespace SmartStock.Services.DatabaseServices
         {
             using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
             {
-                string query = @"INSERT INTO ""Products"" (""Title"", ""Description"", ""CategoryId"", ""StockId"", ""Price"", ""QuantityInStock"", ""AddedTime"") 
-                         VALUES (@Title, @Description, @CategoryId, @StockId, @Price, @QuantityInStock, @AddedTime) 
+                string query = @"INSERT INTO ""Products"" (""Title"", ""Description"", ""CategoryId"", ""StockId"", ""Price"", ""QuantityInStock"", ""AddedTime"", ""Discount"") 
+                         VALUES (@Title, @Description, @CategoryId, @StockId, @Price, @QuantityInStock, @AddedTime, @Discount) 
                          RETURNING ""Id""";
                 return await dbConnection.ExecuteScalarAsync<int>(query, product);
             }
@@ -40,6 +40,15 @@ namespace SmartStock.Services.DatabaseServices
             {
                 string query = @"SELECT * FROM ""Products"" ORDER BY ""AddedTime"" DESC";
                 return await dbConnection.QueryAsync<Products>(query);
+            }
+        }
+
+        public async Task<IEnumerable<Products>> GetAllProductsFromCategoryId(int categoryId)
+        {
+            using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
+            {
+                string query = @"SELECT * FROM ""Products"" WHERE ""CategoryId"" = @CategoryId";
+                return await dbConnection.QueryAsync<Products>(query, new { CategoryId = categoryId });
             }
         }
 
@@ -161,6 +170,21 @@ namespace SmartStock.Services.DatabaseServices
             }
         }
 
+        public async Task<Products?> ChangeProductDiscount(int productId, decimal discount)
+        {
+            var product = await GetProduct(productId);
+            if (product == null)
+            {
+                throw new Exception("Product not found");
+            }
+
+            using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
+            {
+                string query = @"UPDATE ""Products"" SET ""Discount"" = @Discount WHERE ""Id"" = @Id";
+                return await dbConnection.QueryFirstOrDefaultAsync<Products>(query, new { Discount = discount, Id = productId });
+            }
+        }
+
         public async Task<Products?> UpdateProduct(Products updatedProduct)
         {
 
@@ -196,6 +220,10 @@ namespace SmartStock.Services.DatabaseServices
                 await ChangeProductQuantity(updatedProduct.Id, updatedProduct.QuantityInStock);
             }
 
+            if (product.Discount != updatedProduct.Discount) 
+            {
+                await ChangeProductDiscount(updatedProduct.Id, updatedProduct.Discount);
+            }
 
             return await GetProduct(updatedProduct.Id);
         }

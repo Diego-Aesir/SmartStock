@@ -44,7 +44,7 @@ namespace SmartStock.Services.DatabaseServices
                     TotalRevenue = transactions.Sum(x => x.TotalRevenue),
                     TotalQuantitySold = productSolds.Sum(x => x.Quantity),
                     AveragePriceSold = productSolds.Average(x => x.SoldPrice),
-                    PercentageSoldWithDiscount = transactions.Count() == 0 ? 0 : transactions.Count(x => x.PriceDifference > 0) / transactions.Count() * 100,
+                    PercentageSoldWithDiscount = productSolds.Count() == 0 ? 0 : productSolds.Count(x => x.Discount > 0) / transactions.Count() * 100,
                     MostSoldId = productSolds.GroupBy(x => x.ProductId)
                                          .OrderByDescending(g => g.Sum(x => x.Quantity))
                                          .FirstOrDefault()?.Key,
