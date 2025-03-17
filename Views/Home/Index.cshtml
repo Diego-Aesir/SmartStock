@@ -13,7 +13,7 @@
 				<button onclick="window.location.href='@Url.Action("CreateStock", "Stock")'" class="btn btn-sidebar">Create Stock</button>
 				<button onclick="window.location.href='@Url.Action("CreateCategory", "Category")'" class="btn btn-sidebar">Create Product Category</button>
 				<button onclick="window.location.href='@Url.Action("CreateDiscount", "CategoryDiscount")'" class="btn btn-sidebar">Create Category Discount </button>
-				<button class="btn btn-sidebar">Generate Report</button>
+				<button onclick="window.location.href='@Url.Action("Reports", "SalesReport")'" class="btn btn-sidebar">Generate Report</button>
 			</div>
 		}
 		else
@@ -177,10 +177,11 @@
 	}
 
 	.category-button {
+		width: 5vw;
 		background-color: #f8f9fa;
 		border: none;
 		border-radius: 8px;
-		padding: 15px;
+		padding: 1%;
 		display: flex;
 		align-items: center;
 		justify-content: center;

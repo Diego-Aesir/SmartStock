@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartStock.Models;
+using SmartStock.DTO;
 using SmartStock.Services.DatabaseServices;
 
 namespace SmartStock.Controllers
@@ -36,7 +37,7 @@ namespace SmartStock.Controllers
 
                     foreach (var category in allCategories)
                     {
-                        if (category.Title == productCategory.Title && category.Description == productCategory.Description) 
+                        if (category.Title == productCategory.Title && category.Description == productCategory.Description)
                         {
                             ModelState.AddModelError("", "Category already exists");
                             return Redirect(referer);
@@ -70,28 +71,29 @@ namespace SmartStock.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Employees")]
-        public IActionResult UpdateCategory()
+        public IActionResult UpdateCategory(int categoryId)
         {
-            return View();
+            var category = _productCategoryDbService.GetProductCategoryById(categoryId).Result;
+            return View(category);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin,Employees")]
-        public async Task<IActionResult> UpdateCategory(ProductCategory productCategory)
+        public async Task<IActionResult> UpdateCategory(DTO.Category.UpdateCategory productCategory)
         {
-            var referer = Request.Headers["Referer"].ToString();
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _productCategoryDbService.UpdateProductCategory(productCategory);
-
-                    if (!string.IsNullOrEmpty(referer))
+                    ProductCategory updatedCategory = new()
                     {
-                        return Redirect(referer);
-                    }
+                        Id = productCategory.Id,
+                        Title = productCategory.Title ?? null,
+                        Description = productCategory.Description ?? null
+                    };
 
-                    return RedirectToAction("Index", "Home");
+                    await _productCategoryDbService.UpdateProductCategory(updatedCategory);
+                    return RedirectToAction("CreateCategory");
                 }
                 catch (Exception ex)
                 {
@@ -107,6 +109,13 @@ namespace SmartStock.Controllers
         {
             try
             {
+                var products = await _productDbService.GetAllProductsFromCategoryId(productCategoryId);
+
+                foreach (var product in products)
+                {
+                    await _productDbService.DeleteProduct(product.Id);
+                }
+
                 await _productCategoryDbService.DeleteProductCategory(productCategoryId);
                 return RedirectToAction("Index", "Home");
             }

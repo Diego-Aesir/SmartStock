@@ -13,12 +13,18 @@ namespace SmartStock.Controllers
         public readonly UserDbService _userDbService;
         private readonly SignInManager<User> _signInManager;
         private readonly CartDbService _cartDbService;
+        private readonly SalesTransactionDbService _salesTransactionDbService;
 
-        public UserController(UserDbService userDbService, SignInManager<User> signInManager, CartDbService cartDbService)
-        {
+        public UserController(
+            UserDbService userDbService,
+            SignInManager<User> signInManager,
+            CartDbService cartDbService,
+            SalesTransactionDbService salesTransactionDbService
+        ){
             _userDbService = userDbService;
             _signInManager = signInManager;
             _cartDbService = cartDbService;
+            _salesTransactionDbService = salesTransactionDbService;
         }
 
         [HttpGet]
@@ -42,6 +48,7 @@ namespace SmartStock.Controllers
                         FullName = user.FullName,
                         Email = user.Email,
                         PhoneNumber = user.Phone,
+                        CEP = user.CEP,
                         CartId = cartId
                     };
 
@@ -80,6 +87,7 @@ namespace SmartStock.Controllers
                         FullName = user.FullName,
                         Email = user.Email,
                         PhoneNumber = user.Phone,
+                        CEP = user.CEP,
                         CartId = cartId
                     };
 
@@ -179,6 +187,7 @@ namespace SmartStock.Controllers
                         Email = user.Email ?? null,
                         PhoneNumber = user.Phone ?? null,
                         FullName = user.FullName ?? null,
+                        CEP = user.CEP ?? 0,
                         CartId = 0
                     };
 
@@ -213,6 +222,20 @@ namespace SmartStock.Controllers
             {
                 throw new Exception("Delete User is unavailable, please try again later");
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Purchases()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                ViewData["Error"] = "Your user id could not be retrieved";
+                return View();
+            }
+
+            var purchases = await _salesTransactionDbService.GetTransactionFromUser(userId);
+            return View(purchases);
         }
     }
 }

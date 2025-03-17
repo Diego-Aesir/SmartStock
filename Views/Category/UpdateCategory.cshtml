@@ -1,19 +1,17 @@
 ﻿@model SmartStock.Models.ProductCategory
 
 @{
-	ViewData["Title"] = "CreateCategory";
+	ViewData["Title"] = "UpdateCategory";
 }
 
-<h4>Create New Category</h4>
+<h4>Update Category</h4>
 <hr />
 <div class="category-container">
 	<div class="card">
-		<div class="card-header">
-			<h5>Create New Category</h5>
-		</div>
 		<div class="card-body">
-			<form asp-controller="Category" asp-action="CreateCategory" method="post">
+			<form asp-controller="Category" asp-action="UpdateCategory" method="post">
 				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<input type="hidden" asp-for="Id" />
 				<div class="form-group">
 					<label asp-for="Title" class="control-label">Category Title</label>
 					<input asp-for="Title" class="form-control" required />
@@ -25,17 +23,11 @@
 					<span asp-validation-for="Description" class="text-danger"></span>
 				</div>
 				<div class="form-group mt-3">
-					<input type="submit" value="Create" class="btn btn-primary" />
+					<input type="submit" value="Update" class="btn btn-primary" />
 				</div>
 			</form>
 		</div>
 	</div>
-</div>
-
-<hr />
-<h4 class="text-danger">Deleting a Category means to also delete all products within this category.</h4>
-<div>
-	@await Component.InvokeAsync("CategoryComponent")
 </div>
 
 @section Scripts {

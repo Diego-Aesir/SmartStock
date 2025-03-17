@@ -1,0 +1,81 @@
+﻿@model Report
+
+<form asp-action="CreateReport" asp-controller="SalesReport" method="post" class="create-report-form">
+	<div class="form-group">
+		<label for="startDate">Start Date:</label>
+		<input asp-for="startDate" type="datetime-local" class="form-control" id="startDate" />
+	</div>
+
+	<div class="form-group">
+		<label for="endDate">End Date:</label>
+		<input asp-for="endDate" type="datetime-local" class="form-control" id="endDate" />
+	</div>
+
+	<button type="submit" class="submit-button">Create Report</button>
+</form>
+
+<style>
+	.create-report-form {
+		background-color: #f9f9f9;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		max-width: 500px;
+		margin: 0 auto;
+	}
+
+	.form-group {
+		margin-bottom: 15px;
+	}
+
+		.form-group label {
+			display: block;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+	.form-control {
+		width: 100%;
+		padding: 10px;
+		border-radius: 5px;
+		border: 1px solid #ccc;
+		font-size: 16px;
+		transition: border-color 0.3s;
+	}
+
+		.form-control:focus {
+			border-color: #4CAF50;
+			outline: none;
+		}
+
+	.submit-button {
+		background-color: #4CAF50;
+		color: white;
+		padding: 12px 20px;
+		border: none;
+		border-radius: 5px;
+		font-size: 16px;
+		cursor: pointer;
+		width: 100%;
+		transition: background-color 0.3s;
+	}
+
+		.submit-button:hover {
+			background-color: #45a049;
+		}
+
+		.submit-button:active {
+			background-color: #388e3c;
+		}
+
+	.form-control {
+		padding: 8px;
+		font-size: 14px;
+	}
+
+	.submit-button {
+		padding: 10px 15px;
+	}
+
+	}
+</style>

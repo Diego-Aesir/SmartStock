@@ -1,0 +1,70 @@
+﻿@model IEnumerable<SalesReport>
+
+<div class="report-grid">
+    @foreach (var report in Model)
+    {
+        <div class="report-item">
+            <p><strong>Start Date:</strong> @report.StartDate</p>
+            <p><strong>End Date:</strong> @report.EndDate</p>
+            <p><strong>Total Revenue:</strong> @report.TotalRevenue</p>
+            <p><strong>Total Quantity Sold:</strong> @report.TotalQuantitySold</p>
+            <p><strong>Average Price Sold:</strong> @report.AveragePriceSold</p>
+            <p><strong>Percentage Sold With Discount:</strong> @report.PercentageSoldWithDiscount</p>
+            <p><strong>Most Sold Product ID:</strong> @report.MostSoldId</p>
+            <p><strong>Best Client ID:</strong> @report.BestClientId</p>
+            <form asp-action="DeleteReport" method="post">
+                <input name="reportId" value="@report.Id" type="hidden" />
+                <button type="submit" class="btn btn-danger btn-block mt-2">Delete</button>
+            </form>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <h2>No reports available ☹️</h2>
+}
+
+<button class="create-report-button" onclick="window.location.href='@Url.Action("CreateReport")'">Create Report</button>
+
+<style>
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 2%;
+    }
+
+    .report-item {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .report-item:hover {
+            transform: translateY(-5px);
+        }
+
+    .create-report-button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .create-report-button:hover {
+            background-color: #45a049;
+        }
+
+    h2 {
+        color: #ff6347;
+        text-align: center;
+        font-size: 1.5em;
+    }
+</style>

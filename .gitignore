@@ -6,11 +6,8 @@ obj/
 *.user
 *.suo
 
-.dockerignore
-Dockerfile
 
 appsettings.Development.json
 
 *.log
 
-Migrations

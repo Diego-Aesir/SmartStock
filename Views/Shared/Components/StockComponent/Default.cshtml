@@ -6,12 +6,16 @@
     @foreach (var stock in Model)
     {
         <div class="stock-item d-flex align-items-center mb-3">
-            <h4 class="stock-name mb-0">@stock.Name</h4>
-
-            <form method="post" asp-controller="Stock" asp-action="DeleteStock" class="ms-auto">
-                <input type="hidden" name="stockId" value="@stock.Id" />
-                <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
-            </form>
+            <div class="stock-info">
+                <h4 class="stock-name mb-0">@stock.Name</h4>
+            </div>
+            <div class="button-group ms-auto">
+                <button class="btn btn-update" onclick="window.location.href='@Url.Action("UpdateStock", "Stock", new {stockId = stock.Id})'">Update</button>
+                <form method="post" asp-controller="Stock" asp-action="DeleteStock" class="delete-form">
+                    <input type="hidden" name="stockId" value="@stock.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
+                </form>
+            </div>
         </div>
     }
 </div>
@@ -23,9 +27,12 @@
 
     .stock-item {
         background-color: #f8f9fa;
-        padding: 10px;
+        padding: 15px;
         border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -39,10 +46,39 @@
         color: #343a40;
     }
 
+    .button-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-update {
+        font-size: 14px;
+        padding: 6px 12px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-update:hover {
+            background-color: #0056b3;
+        }
+
+    .delete-form {
+        margin-left: 10px;
+    }
+
     .delete-btn {
         font-size: 14px;
-        padding: 5px 10px;
+        padding: 6px 12px;
+        background-color: #dc3545;
+        border: none;
+        color: white;
         border-radius: 5px;
+        cursor: pointer;
         transition: background-color 0.3s ease;
     }
 

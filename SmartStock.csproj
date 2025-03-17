@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="DTO\Product\UpdateProductIForm.cs" />
     <Compile Remove="ViewComponents\UpdateStock.cs" />
   </ItemGroup>
 
@@ -46,6 +47,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
 </Project>

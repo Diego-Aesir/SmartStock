@@ -39,9 +39,9 @@ namespace SmartStock.Services.DatabaseServices
             };
         }
 
-        public async Task<Stock?> UpdateStockAsync(Stock updatedStock)
+        public async Task<Stock?> UpdateStockNameAsync(int id, string name)
         {
-            var stockExists = await GetStockAsync(updatedStock.Id);
+            var stockExists = await GetStockAsync(id);
             if (stockExists == null)
             {
                 throw new Exception("Stock does not exist");
@@ -50,7 +50,7 @@ namespace SmartStock.Services.DatabaseServices
             using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
             {
                 string query = @"UPDATE ""Stocks"" SET ""Name"" = @Name WHERE ""Id"" = @Id RETURNING *";
-                return await dbConnection.QueryFirstOrDefaultAsync<Stock>(query, new { updatedStock.Name, updatedStock.Id });
+                return await dbConnection.QueryFirstOrDefaultAsync<Stock>(query, new { name, id });
             }
         }
 

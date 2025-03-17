@@ -7,6 +7,10 @@
 
 @if (productsInCart != null && productsInCart.Any())
 {
+    @if(ViewBag.Error != null) {
+        <h4 class="text-danger">@ViewBag.Error</h4>
+    }
+
     <div class="cart-container">
         @for (int i = 0; i < productsInCart.Count(); i++)
         {
@@ -14,6 +18,7 @@
             var product = products.ElementAt(i);
 
             <div class="cart-item">
+                <img src="~/uploads/@product.Photo" alt="@product.Title" class="product-image">
                 <div class="cart-item-header">
                     <h3 class="product-title" onclick="window.location.href='@Url.Action("GetProduct", "Product", new { productId = product.Id })'">
                         @product?.Title
@@ -80,6 +85,14 @@ else
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+
+    .product-image {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+        object-fit: cover;
+        max-height: 200px;
     }
 
     .product-title {

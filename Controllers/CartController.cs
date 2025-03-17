@@ -23,7 +23,7 @@ namespace SmartStock.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetCart()
+        public async Task<IActionResult> GetCart(string? error)
         {
             var user = await _userDbService.GetUserById(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             if (user == null)
@@ -45,6 +45,11 @@ namespace SmartStock.Controllers
             }
 
             ViewBag.Products = products;
+
+            if(error != null)
+            {
+                ViewBag.Error = error;
+            }
 
             return View(userCart);
         }
@@ -81,7 +86,6 @@ namespace SmartStock.Controllers
                         }
                     }
 
-
                     ProductInCart productInCart = new()
                     {
                         CartId = userCart.Id,
@@ -90,8 +94,6 @@ namespace SmartStock.Controllers
                     };
 
                     await _productInCartDbService.CreateProductInCart(productInCart);
-                    await _productDbService.ChangeProductQuantity(productId, product.QuantityInStock - 1);
-
                     return Redirect(referer);
                 }
                 catch (Exception)
@@ -108,12 +110,7 @@ namespace SmartStock.Controllers
         {
             try
             {
-                var productInCart = await _productInCartDbService.GetProductInCartById(productId);
-                var product = await _productDbService.GetProduct(productInCart.ProductId);
-
-                await _productDbService.ChangeProductQuantity(productInCart.ProductId, product.QuantityInStock + productInCart.Quantity);
                 await _productInCartDbService.DeleteProductInCart(productId);
-
                 return RedirectToAction("GetCart", "Cart");
             }
             catch (Exception)
@@ -136,9 +133,12 @@ namespace SmartStock.Controllers
                     return RedirectToAction("GetProduct", "Product", new { productId = product.Id });
                 }
 
-                await _productDbService.ChangeProductQuantity(productInCart.ProductId, product.QuantityInStock - 1);
-                await _productInCartDbService.UpdateProductQuantity(productId, productInCart.Quantity + 1);
+                if (product.QuantityInStock <= productInCart.Quantity)
+                {
+                    return RedirectToAction("GetCart", "Cart", new {error = $"You already have added all \"{product.Title}\" available on our stocks"});
+                }
 
+                await _productInCartDbService.UpdateProductQuantity(productId, productInCart.Quantity + 1);
                 return RedirectToAction("GetCart", "Cart");
             }
             catch (Exception)
@@ -161,9 +161,7 @@ namespace SmartStock.Controllers
                     return await RemoveFromCart(productId);
                 }
 
-                await _productDbService.ChangeProductQuantity(productInCart.ProductId, product.QuantityInStock + 1);
                 await _productInCartDbService.UpdateProductQuantity(productId, productInCart.Quantity - 1);
-
                 return RedirectToAction("GetCart", "Cart");
             }
             catch (Exception)

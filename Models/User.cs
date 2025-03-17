@@ -11,5 +11,8 @@ namespace SmartStock.Models
         public string? FullName { get; set; }
 
         public required int CartId { get; set; }
+
+        [MaxLength(8)]
+        public required int CEP { get; set; }
     }
 }

@@ -21,5 +21,7 @@ namespace SmartStock.Models
         public decimal TotalRevenue { get; set; }
 
         public decimal SaleDiscount { get; set; }
+
+        public required int DeliverCEP { get; set; }
     }
 }

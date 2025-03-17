@@ -18,6 +18,10 @@ namespace SmartStock.DTO.User
         [Required(ErrorMessage = "Phone number is required")]
         public required string Phone { get; set; }
 
+        [Required(ErrorMessage = "CEP number is required")]
+        [MaxLength(8, ErrorMessage = "CEP must have only 8 digits")]
+        public required int CEP { get; set; }
+
         [Required(ErrorMessage = "Password is required")]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
         [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$", ErrorMessage = "Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, and one number.")]

@@ -33,7 +33,8 @@ namespace SmartStock.Models
         [DataType(DataType.DateTime, ErrorMessage = "Invalid DateTime format.")]
         public required DateTime AddedTime { get; set; }
 
-        public required ICollection<ProductInCart> ProductInCart { get; set; } = new List<ProductInCart>();
+        public ICollection<ProductInCart> ProductInCart { get; set; } = new List<ProductInCart>();
 
+        public required string Photo { get; set; }
     }
 }

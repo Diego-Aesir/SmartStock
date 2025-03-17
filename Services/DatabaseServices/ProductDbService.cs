@@ -18,8 +18,8 @@ namespace SmartStock.Services.DatabaseServices
         {
             using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
             {
-                string query = @"INSERT INTO ""Products"" (""Title"", ""Description"", ""CategoryId"", ""StockId"", ""Price"", ""QuantityInStock"", ""AddedTime"", ""Discount"") 
-                         VALUES (@Title, @Description, @CategoryId, @StockId, @Price, @QuantityInStock, @AddedTime, @Discount) 
+                string query = @"INSERT INTO ""Products"" (""Title"", ""Description"", ""CategoryId"", ""StockId"", ""Price"", ""QuantityInStock"", ""AddedTime"", ""Discount"", ""Photo"") 
+                         VALUES (@Title, @Description, @CategoryId, @StockId, @Price, @QuantityInStock, @AddedTime, @Discount, @Photo) 
                          RETURNING ""Id""";
                 return await dbConnection.ExecuteScalarAsync<int>(query, product);
             }
@@ -49,6 +49,15 @@ namespace SmartStock.Services.DatabaseServices
             {
                 string query = @"SELECT * FROM ""Products"" WHERE ""CategoryId"" = @CategoryId";
                 return await dbConnection.QueryAsync<Products>(query, new { CategoryId = categoryId });
+            }
+        }
+
+        public async Task<IEnumerable<Products>> GetAllProductsFromStockId(int stockId)
+        {
+            using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
+            {
+                string query = @"SELECT * FROM ""Products"" WHERE ""StockId"" = @StockId";
+                return await dbConnection.QueryAsync<Products>(query, new { StockId = stockId });
             }
         }
 
@@ -185,6 +194,21 @@ namespace SmartStock.Services.DatabaseServices
             }
         }
 
+        public async Task<Products?> ChangeProductPhoto(int productId, string photo)
+        {
+            var product = await GetProduct(productId);
+            if (product == null)
+            {
+                throw new Exception("Product not found");
+            }
+
+            using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
+            {
+                string query = @"UPDATE ""Products"" SET ""Photo"" = @Photo WHERE ""Id"" = @Id";
+                return await dbConnection.QueryFirstOrDefaultAsync<Products>(query, new { Photo = photo, Id = productId });
+            }
+        }
+
         public async Task<Products?> UpdateProduct(Products updatedProduct)
         {
 
@@ -220,9 +244,14 @@ namespace SmartStock.Services.DatabaseServices
                 await ChangeProductQuantity(updatedProduct.Id, updatedProduct.QuantityInStock);
             }
 
-            if (product.Discount != updatedProduct.Discount) 
+            if (product.Discount != updatedProduct.Discount)
             {
                 await ChangeProductDiscount(updatedProduct.Id, updatedProduct.Discount);
+            }
+
+            if (product.Photo != updatedProduct.Photo && !string.IsNullOrEmpty(updatedProduct.Photo))
+            {
+                await ChangeProductPhoto(updatedProduct.Id, updatedProduct.Photo);
             }
 
             return await GetProduct(updatedProduct.Id);

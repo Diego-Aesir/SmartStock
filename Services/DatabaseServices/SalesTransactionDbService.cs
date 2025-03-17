@@ -48,6 +48,15 @@ namespace SmartStock.Services.DatabaseServices
             }
         }
 
+        public async Task<IEnumerable<SalesTransaction>> GetTransactionFromUser(string userId)
+        {
+            using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
+            {
+                string query = @"SELECT * FROM ""SalesTransactions"" WHERE ""ClientId"" = @ClientId";
+                return await dbConnection.QueryAsync<SalesTransaction>(query, new { ClientId = userId });
+            }
+        }
+
         public async Task<SalesTransaction> TransactionProduct(int salesTransactionId, ProductInCart productInCart)
         {
             var transaction = await GetTransaction(salesTransactionId);
@@ -67,6 +76,7 @@ namespace SmartStock.Services.DatabaseServices
             ProductSold productSold = new()
             {
                 ProductId = productInCart.ProductId,
+                ProductTitle = productExist.Title,
                 SalesTransactionId = salesTransactionId,
                 Quantity = productInCart.Quantity,
                 SoldPrice = finalPrice,
@@ -121,7 +131,7 @@ namespace SmartStock.Services.DatabaseServices
 
             using (IDbConnection dbConnection = new Npgsql.NpgsqlConnection(connectionString))
             {
-                string query = @"SELECT * FROM ""SalesTransaction"" WHERE ""SoldTime"" >= @StartDate AND ""SoldTime"" <= @EndDate";
+                string query = @"SELECT * FROM ""SalesTransactions"" WHERE ""SoldTime"" >= @StartDate AND ""SoldTime"" <= @EndDate";
                 return await dbConnection.QueryAsync<SalesTransaction>(query, new { StartDate = startDate, EndDate = endDate });
             }
         }

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<SalesTransaction>
+
+<div class="purchase-list">
+    @foreach (var purchase in Model)
+    {
+        <div class="purchase-item" onclick="window.location.href='@Url.Action("SoldProducts", "SalesTransaction", new { saleId = purchase.Id })'">
+            <h2 class="purchase-date">
+                Acquired on: <span>@purchase.SoldTime</span>
+            </h2>
+        </div>
+    }
+</div>
+
+<style>
+    .purchase-list {
+        margin: 20px 0;
+    }
+
+    .purchase-item {
+        background-color: #fff;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+
+        .purchase-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+    .purchase-date {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+        .purchase-date span {
+            font-size: 16px;
+            font-weight: normal;
+            color: #555;
+        }
+</style>

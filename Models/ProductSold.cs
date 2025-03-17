@@ -21,6 +21,8 @@ namespace SmartStock.Models
         [ForeignKey("ProductId")]
         public required int ProductId { get; set; }
 
+        public required string ProductTitle { get; set; }
+
         public required decimal Discount { get; set; }
     }
 }

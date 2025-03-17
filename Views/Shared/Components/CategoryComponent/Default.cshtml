@@ -8,10 +8,13 @@
                 <h4 class="category-title mb-0">@category.Title</h4>
                 <h4 class="category-description mb-0">@category.Description</h4>
             </div>
-            <form method="post" asp-controller="Category" asp-action="DeleteCategory" class="delete-form">
-                <input type="hidden" name="productCategoryId" value="@category.Id" />
-                <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
-            </form>
+            <div class="button-group">
+                <button class="btn btn-update" onclick="window.location.href='@Url.Action("UpdateCategory", "Category", new {categoryId = category.Id})'">Update</button>
+                <form method="post" asp-controller="Category" asp-action="DeleteCategory" class="delete-form">
+                    <input type="hidden" name="productCategoryId" value="@category.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
+                </form>
+            </div>
         </div>
     }
 </div>
@@ -51,8 +54,28 @@
         color: #555;
     }
 
+    .button-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-update {
+        font-size: 14px;
+        padding: 6px 12px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .btn-update:hover {
+            background-color: #0056b3;
+        }
+
     .delete-form {
-        margin-left: 20px;
+        margin-left: 10px;
     }
 
     .delete-btn {

@@ -1,4 +1,4 @@
-﻿@model SmartStock.Models.Products
+﻿@model ProductIForm
 
 @{
     ViewData["Title"] = "Update Product";
@@ -9,7 +9,7 @@
 <div class="product-form-container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form asp-action="UpdateProduct" method="post">
+            <form asp-action="UpdateProduct" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Id" />
 
@@ -60,9 +60,15 @@
                 </div>
 
                 <div class="form-group mb-4">
-                    <label asp-for="Discount" class="control-label">Descount</label>
-                    <input type="number" asp-for="Discount" class="form-control" step=".01" placeholder="Enter the product descount. E.g 0.20" />
+                    <label asp-for="Discount" class="control-label">Discount</label>
+                    <input type="number" asp-for="Discount" class="form-control" step=".01" placeholder="Enter the product discount. E.g 0.20" />
                     <span asp-validation-for="Discount" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="Photo" class="control-label">Photo</label>
+                    <input type="file" asp-for="Photo" class="form-control" />
+                    <span asp-validation-for="Photo" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-4">

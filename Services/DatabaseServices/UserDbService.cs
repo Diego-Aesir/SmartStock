@@ -63,6 +63,7 @@ namespace SmartStock.Services.DatabaseServices
                 oldUser.Email = updatedUser.Email ?? oldUser.Email;
                 oldUser.PhoneNumber = updatedUser.PhoneNumber ?? oldUser.PhoneNumber;
                 oldUser.FullName = updatedUser.FullName ?? oldUser.FullName;
+                oldUser.CEP = updatedUser.CEP != 0 ? updatedUser.CEP : oldUser.CEP;
 
                 if (!string.IsNullOrEmpty(newPassword))
                 {

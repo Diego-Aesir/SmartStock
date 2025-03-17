@@ -2,6 +2,7 @@
 using SmartStock.Services.DatabaseServices;
 using SmartStock.Models;
 using Microsoft.AspNetCore.Authorization;
+using SmartStock.DTO.Product;
 
 namespace SmartStock.Controllers
 {
@@ -43,20 +44,21 @@ namespace SmartStock.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Employees")]
-        public async Task<IActionResult> RegisterProduct(Products product)
+        public async Task<IActionResult> RegisterProduct(ProductIForm product)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var productId = await _productDbService.CreateProduct(product);
+                    var newProduct = await product.TurnIFormIntoClass();
+                    var productId = await _productDbService.CreateProduct(newProduct);
                     return RedirectToAction("GetProduct", "Product", new { productId = productId });
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", ex.Message);
                 }
-            } 
+            }
             ViewBag.Stocks = await _stockDbService.GetAllStockAsync();
             ViewBag.Categories = await _categoryDbService.GetAllCategories();
 
@@ -73,9 +75,22 @@ namespace SmartStock.Controllers
                 ViewBag.Categories = await _categoryDbService.GetAllCategories();
 
                 var product = await _productDbService.GetProduct(productId);
-                return View(product);
+                ProductIForm productIForm = new()
+                {
+                    Id = product.Id,
+                    Title = product.Title,
+                    Description = product.Description ?? "",
+                    CategoryId = product.CategoryId,
+                    StockId = product.StockId,
+                    Price = product.Price,
+                    QuantityInStock = product.QuantityInStock,
+                    AddedTime = product.AddedTime,
+                    Discount = product.Discount
+                };
+
+                return View(productIForm);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -83,14 +98,25 @@ namespace SmartStock.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Employees")]
-        public async Task<IActionResult> UpdateProduct(Products updatedProduct)
+        public async Task<IActionResult> UpdateProduct(ProductIForm updatedProduct)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var product = await _productDbService.UpdateProduct(updatedProduct);
-                    return RedirectToAction("GetProduct", "Product", new { productId = product.Id });
+                    if (updatedProduct.Photo != null)
+                    {
+                        var productPhotoUpdate = await _productDbService.GetProduct(updatedProduct.Id.Value);
+                        if (!string.IsNullOrEmpty(productPhotoUpdate.Photo))
+                        {
+                            updatedProduct.RemovePhoto(productPhotoUpdate.Photo);
+                        }
+                    }
+                    var product = await updatedProduct.TurnIFormIntoClass();
+                    product.Id = updatedProduct.Id.Value;
+
+                    var productUpdate = await _productDbService.UpdateProduct(product);
+                    return RedirectToAction("GetProduct", "Product", new { productId = productUpdate.Id });
                 }
                 catch (Exception ex)
                 {
@@ -118,13 +144,6 @@ namespace SmartStock.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return View();
             }
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> SearchProductByTitle()
-        {
-            throw new NotImplementedException();
         }
     }
 }
